@@ -38,6 +38,29 @@
     #btn-color.is-pressed {
       background-color: rgba(var(--btn-rgb, 0,0,0), 1);
     }
+    #btn-brush {
+      position: relative;
+      width: 56px;
+      height: 160px;
+      border-radius: 9999px;
+      background-color: rgba(255,255,255,0.3);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+      transition: background-color 180ms ease-out, filter 150ms ease-out,
+                  transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 220ms ease-out;
+    }
+    #btn-brush-knob {
+      position: absolute;
+      left: 8px;
+      width: 40px;
+      height: 40px;
+      touch-action: none;
+    }
+    #btn-brush-knob,
+    #btn-brush-knob:hover,
+    #btn-brush-knob.is-pressed {
+      background-color: rgba(255,255,255,1);
+    }
   </style>
 </head>
 <body>
@@ -92,10 +115,14 @@
         </g>
       </svg>
     </button>
-    <button id="btn-brush" title="Brush Size" style="--btn-rgb:255,255,255;"
-      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
-      <div id="brush-dot" class="rounded-full bg-gray-800" style="width:6px;height:6px;"></div>
-    </button>
+    <div id="btn-brush" title="Brush Size" class="shadow-lg">
+      <svg viewBox="0 0 56 160" width="56" height="160"
+           style="position:absolute;top:0;left:0;pointer-events:none;" aria-hidden="true">
+        <path d="M16,24 L40,24 L28,136 Z" fill="rgba(0,0,0,0.3)"/>
+      </svg>
+      <div id="btn-brush-knob" class="sidebar-btn rounded-full border-2 border-gray-400 shadow-lg"
+           style="top:120px;"></div>
+    </div>
   </div>
 
   <!-- Download Modal -->
@@ -217,6 +244,7 @@
     bindEvents();
     syncMenuButtonVisual();
     updateColorIcon();
+    syncBrushKnobPosition();
     updateCursor();
 
     window.addEventListener('resize', () => {
@@ -407,13 +435,57 @@
     updateCursor();
   }
 
-  function cycleBrush() {
-    brushIndex = (brushIndex + 1) % brushSizes.length;
+  // ── Brush slider ─────────────────────────────────────────────────────────
+  const BRUSH_TRACK_HEIGHT = 160;
+  const BRUSH_KNOB_RADIUS = 20;
+  const BRUSH_STOPS = [140, 110, 80, 50, 20]; // index i -> knob center Y; brushSizes[0]=2(bottom) ... brushSizes[4]=30(top)
+
+  function syncBrushKnobPosition() {
+    document.getElementById('btn-brush-knob').style.top = (BRUSH_STOPS[brushIndex] - BRUSH_KNOB_RADIUS) + 'px';
+  }
+
+  function setBrushIndex(i) {
+    brushIndex = Math.max(0, Math.min(brushSizes.length - 1, i));
     brushSize = brushSizes[brushIndex];
-    const s = Math.min(brushSize * 1.5, 36);
-    const dot = document.getElementById('brush-dot');
-    dot.style.width = dot.style.height = s + 'px';
+    syncBrushKnobPosition();
     updateCursor();
+  }
+
+  function nearestBrushIndexForY(y) {
+    const clamped = Math.max(BRUSH_KNOB_RADIUS, Math.min(BRUSH_TRACK_HEIGHT - BRUSH_KNOB_RADIUS, y));
+    let nearest = 0, minDist = Infinity;
+    BRUSH_STOPS.forEach((stopY, idx) => {
+      const d = Math.abs(stopY - clamped);
+      if (d < minDist) { minDist = d; nearest = idx; }
+    });
+    return { index: nearest, y: clamped };
+  }
+
+  let brushDragging = false;
+
+  function onBrushKnobDown(e) {
+    e.stopPropagation(); // don't also trigger the track's tap-to-jump handler
+    brushDragging = true;
+    e.target.setPointerCapture(e.pointerId);
+  }
+
+  function onBrushKnobMove(e) {
+    if (!brushDragging) return;
+    const rect = document.getElementById('btn-brush').getBoundingClientRect();
+    const { index, y } = nearestBrushIndexForY(e.clientY - rect.top);
+    document.getElementById('btn-brush-knob').style.top = (y - BRUSH_KNOB_RADIUS) + 'px'; // live-follow pointer
+    if (index !== brushIndex) { brushIndex = index; brushSize = brushSizes[brushIndex]; updateCursor(); }
+  }
+
+  function onBrushKnobUp() {
+    if (!brushDragging) return;
+    brushDragging = false;
+    setBrushIndex(brushIndex); // snap exactly onto the stop
+  }
+
+  function onBrushTrackDown(e) {
+    const rect = document.getElementById('btn-brush').getBoundingClientRect();
+    setBrushIndex(nearestBrushIndexForY(e.clientY - rect.top).index); // tap anywhere on track to jump
   }
 
   function clearCanvas() {
@@ -541,7 +613,14 @@
       document.getElementById('settings-modal').style.display = 'flex';
     });
     document.getElementById('btn-color').addEventListener('click', cycleColor);
-    document.getElementById('btn-brush').addEventListener('click', cycleBrush);
+
+    bindPressFeedback(document.getElementById('btn-brush-knob'));
+    const brushKnob = document.getElementById('btn-brush-knob');
+    brushKnob.addEventListener('pointerdown', onBrushKnobDown);
+    brushKnob.addEventListener('pointermove', onBrushKnobMove);
+    brushKnob.addEventListener('pointerup', onBrushKnobUp);
+    brushKnob.addEventListener('pointercancel', onBrushKnobUp);
+    document.getElementById('btn-brush').addEventListener('pointerdown', onBrushTrackDown);
 
     document.getElementById('btn-close-preview').addEventListener('click', () => {
       document.getElementById('preview-modal').style.display = 'none';
