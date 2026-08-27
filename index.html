@@ -14,6 +14,30 @@
       height: 100%;
       overflow: hidden;
     }
+    .sidebar-btn {
+      transform: scale(1);
+      background-color: rgba(var(--btn-rgb, 255,255,255), 0.3);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: background-color 180ms ease-out, filter 150ms ease-out,
+                  transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 220ms ease-out;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .sidebar-btn:hover {
+        background-color: rgba(var(--btn-rgb, 255,255,255), 0.6);
+        transform: scale(1.15);
+      }
+    }
+    .sidebar-btn.is-pressed {
+      background-color: rgba(var(--btn-rgb, 255,255,255), 0.6);
+      filter: brightness(0.85);
+      transform: scale(1.05);
+    }
+    #btn-color,
+    #btn-color:hover,
+    #btn-color.is-pressed {
+      background-color: rgba(var(--btn-rgb, 0,0,0), 1);
+    }
   </style>
 </head>
 <body>
@@ -23,8 +47,8 @@
   <canvas id="canvas" style="position:absolute;top:0;right:0;bottom:0;left:0;touch-action:none;"></canvas>
 
   <!-- Menu Toggle -->
-  <button id="btn-menu" style="position:absolute;top:24px;right:24px;z-index:50;"
-    class="w-14 h-14 rounded-full shadow-lg border-2 flex items-center justify-center transition-colors bg-gray-800 border-gray-700">
+  <button id="btn-menu" style="position:absolute;top:24px;right:24px;z-index:50;--btn-rgb:31,41,55;"
+    class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>
     </svg>
@@ -32,36 +56,44 @@
 
   <!-- Toolbar -->
   <div id="toolbar" style="position:absolute;top:96px;right:24px;z-index:40;display:flex;flex-direction:column;gap:12px;">
-    <button id="btn-new-shape" title="New Shape"
-      class="w-14 h-14 rounded-full bg-white shadow-lg border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors">
+    <button id="btn-new-shape" title="New Shape" style="--btn-rgb:255,255,255;"
+      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
       </svg>
     </button>
-    <button id="btn-clear" title="Clear"
-      class="w-14 h-14 rounded-full bg-white shadow-lg border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors">
+    <button id="btn-clear" title="Clear" style="--btn-rgb:255,255,255;"
+      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
       </svg>
     </button>
-    <button id="btn-download" title="Download"
-      class="w-14 h-14 rounded-full bg-white shadow-lg border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors">
+    <button id="btn-download" title="Download" style="--btn-rgb:255,255,255;"
+      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
       </svg>
     </button>
-    <button id="btn-settings" title="Shape Settings"
-      class="w-14 h-14 rounded-full bg-white shadow-lg border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors">
+    <button id="btn-settings" title="Shape Settings" style="--btn-rgb:255,255,255;"
+      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
         <circle cx="12" cy="12" r="3"/>
       </svg>
     </button>
     <button id="btn-color" title="Color"
-      class="w-14 h-14 rounded-full shadow-lg border-4 border-white hover:scale-105 transition-transform"
-      style="background-color:#000000;"></button>
-    <button id="btn-brush" title="Brush Size"
-      class="w-14 h-14 rounded-full bg-white shadow-lg border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors">
+      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn"
+      style="--btn-rgb:0,0,0;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="rotate(45 12 12)">
+          <rect x="10" y="2" width="4" height="10" rx="1.5"/>
+          <line x1="12" y1="12" x2="12" y2="15"/>
+          <path d="M9 15h6l-1.2 5a1.8 1.8 0 0 1-3.6 0z"/>
+        </g>
+      </svg>
+    </button>
+    <button id="btn-brush" title="Brush Size" style="--btn-rgb:255,255,255;"
+      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
       <div id="brush-dot" class="rounded-full bg-gray-800" style="width:6px;height:6px;"></div>
     </button>
   </div>
@@ -157,6 +189,10 @@
   let brushSize = 2, brushIndex = 0;
   let color = '#000000', colorIndex = 0;
   let menuOpen = true;
+  const TOOLBAR_BUTTON_IDS = ['btn-new-shape','btn-clear','btn-download','btn-settings','btn-color','btn-brush'];
+  const CASCADE_STAGGER_MS = 40;
+  const CASCADE_TRANSFORM_MS = 300; // matches .sidebar-btn's transform transition duration
+  let cascadeTimeouts = [];
   let bgColor = randomPastel();
   let shapesColor = '#ffffff';
   let shapeSettings = { ovals: 2, quads: 1, rectangles: 1, curves: 1, triangles: 1 };
@@ -179,6 +215,8 @@
     buildSliders();
     generateRandomShape();
     bindEvents();
+    syncMenuButtonVisual();
+    updateColorIcon();
     updateCursor();
 
     window.addEventListener('resize', () => {
@@ -239,7 +277,8 @@
     // Sync brush color if on background color option
     if (colorIndex === 2) {
       color = bgColor;
-      document.getElementById('btn-color').style.backgroundColor = color;
+      document.getElementById('btn-color').style.setProperty('--btn-rgb', hexToRgbString(color));
+      updateColorIcon();
       updateCursor();
     }
 
@@ -351,10 +390,20 @@
   }
 
   // ── Color & brush cycling ─────────────────────────────────────────────────
+  function hexToRgbString(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
+  }
+
+  function updateColorIcon() {
+    document.querySelector('#btn-color svg').setAttribute('stroke', color === '#000000' ? 'white' : '#1f2937');
+  }
+
   function cycleColor() {
     colorIndex = (colorIndex + 1) % 3;
     color = ['#000000', '#ffffff', bgColor][colorIndex];
-    document.getElementById('btn-color').style.backgroundColor = color;
+    document.getElementById('btn-color').style.setProperty('--btn-rgb', hexToRgbString(color));
+    updateColorIcon();
     updateCursor();
   }
 
@@ -374,19 +423,39 @@
   }
 
   // ── Menu ──────────────────────────────────────────────────────────────────
+  function syncMenuButtonVisual() {
+    const btn = document.getElementById('btn-menu');
+    btn.style.setProperty('--btn-rgb', menuOpen ? '31,41,55' : '255,255,255');
+    btn.querySelector('svg').innerHTML = menuOpen
+      ? '<polyline points="18 15 12 9 6 15"/>'
+      : '<line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>';
+  }
+
   function toggleMenu() {
     menuOpen = !menuOpen;
-    const btn = document.getElementById('btn-menu');
-    const tb = document.getElementById('toolbar');
-    if (menuOpen) {
-      btn.style.backgroundColor = '#1f2937'; btn.style.borderColor = '#374151';
-      btn.querySelector('svg').setAttribute('stroke', 'white');
-      tb.style.display = 'flex';
-    } else {
-      btn.style.backgroundColor = 'white'; btn.style.borderColor = '#d1d5db';
-      btn.querySelector('svg').setAttribute('stroke', '#1f2937');
-      tb.style.display = 'none';
-    }
+    syncMenuButtonVisual();
+
+    cascadeTimeouts.forEach(clearTimeout);
+    cascadeTimeouts = [];
+
+    TOOLBAR_BUTTON_IDS.forEach((id, i) => {
+      const el = document.getElementById(id);
+      const delay = menuOpen
+        ? (TOOLBAR_BUTTON_IDS.length - 1 - i) * CASCADE_STAGGER_MS  // opening: bottom button leads
+        : i * CASCADE_STAGGER_MS;                                   // closing: top button leads
+      el.style.transitionDelay = `0ms, 0ms, ${delay}ms, ${delay}ms`; // matches background-color, filter, transform, opacity order
+      if (menuOpen) {
+        el.style.transform = '';
+        el.style.opacity = '';
+        el.style.pointerEvents = '';
+        cascadeTimeouts.push(setTimeout(() => { el.style.transitionDelay = ''; }, delay + CASCADE_TRANSFORM_MS));
+      } else {
+        const dist = 72 + i * 68; // toolbar-top(96) - menu-top(24) + i * (56px button + 12px gap)
+        el.style.transform = `translateY(-${dist}px) scale(0.2)`;
+        el.style.opacity = '0';
+        el.style.pointerEvents = 'none';
+      }
+    });
   }
 
   // ── Download modal ────────────────────────────────────────────────────────
@@ -443,7 +512,18 @@
   }
 
   // ── Event binding ─────────────────────────────────────────────────────────
+  function bindPressFeedback(el) {
+    const press = () => el.classList.add('is-pressed');
+    const release = () => el.classList.remove('is-pressed');
+    el.addEventListener('pointerdown', press);
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+    el.addEventListener('pointerleave', release); // finger/cursor slides off before release
+  }
+
   function bindEvents() {
+    ['btn-menu', ...TOOLBAR_BUTTON_IDS].forEach(id => bindPressFeedback(document.getElementById(id)));
+
     const canvas = document.getElementById('canvas');
     canvas.addEventListener('mousedown', onDown);
     canvas.addEventListener('mousemove', onMove);
