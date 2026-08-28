@@ -20,7 +20,7 @@
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
       transition: background-color 180ms ease-out, filter 150ms ease-out,
-                  transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 220ms ease-out;
+                  transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 120ms ease-out;
     }
     @media (hover: hover) and (pointer: fine) {
       .sidebar-btn:hover {
@@ -33,10 +33,28 @@
       filter: brightness(0.85);
       transform: scale(1.05);
     }
-    #btn-color,
-    #btn-color:hover,
-    #btn-color.is-pressed {
-      background-color: rgba(var(--btn-rgb, 0,0,0), 1);
+    #btn-brush {
+      position: relative;
+      width: 56px;
+      height: 165.75px;
+      border-radius: 9999px;
+      background-color: rgba(255,255,255,0.3);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+      transition: background-color 180ms ease-out, filter 150ms ease-out,
+                  transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 120ms ease-out;
+    }
+    #btn-brush-knob {
+      position: absolute;
+      left: 12.25px;
+      width: 31.5px;
+      height: 31.5px;
+      touch-action: none;
+    }
+    #btn-brush-knob,
+    #btn-brush-knob:hover,
+    #btn-brush-knob.is-pressed {
+      background-color: rgba(255,255,255,1);
     }
   </style>
 </head>
@@ -81,21 +99,21 @@
         <circle cx="12" cy="12" r="3"/>
       </svg>
     </button>
-    <button id="btn-color" title="Color"
-      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn"
-      style="--btn-rgb:0,0,0;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <g transform="rotate(45 12 12)">
-          <rect x="10" y="2" width="4" height="10" rx="1.5"/>
-          <line x1="12" y1="12" x2="12" y2="15"/>
-          <path d="M9 15h6l-1.2 5a1.8 1.8 0 0 1-3.6 0z"/>
-        </g>
+    <button id="btn-color" title="Color" style="--btn-rgb:255,255,255;"
+      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
+      <svg width="33" height="33" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect id="btn-color-swatch" width="32" height="32" rx="16" fill="#000000"/>
+        <path id="btn-color-icon" d="M23.387 7.67399C23.6451 7.63868 23.905 7.72657 24.0893 7.91081C24.2735 8.09504 24.3614 8.35498 24.3261 8.61312C23.9804 11.1402 22.9583 13.5267 21.3687 15.5215C19.9311 17.3255 18.0765 18.7465 15.97 19.6686C16.0553 20.3774 15.9572 21.098 15.6827 21.7609C15.3674 22.5221 14.8337 23.1732 14.1487 23.631C13.4635 24.0889 12.6575 24.3333 11.8334 24.3333H8.50008C8.03984 24.3333 7.66675 23.9602 7.66675 23.5V20.1667C7.66675 19.3426 7.91122 18.5366 8.36906 17.8514C8.82689 17.1663 9.47794 16.6327 10.2392 16.3174C10.9018 16.043 11.6222 15.9441 12.3306 16.0293C13.2528 13.923 14.6747 12.0689 16.4786 10.6313C18.4733 9.04183 20.8599 8.01966 23.387 7.67399ZM15.0577 14.5571C14.6179 15.1873 14.2349 15.8576 13.9167 16.5615C14.2299 16.7425 14.5209 16.9622 14.7794 17.2207C15.0376 17.4789 15.2569 17.7698 15.4377 18.0825C16.1417 17.7643 16.8119 17.3814 17.4421 16.9416C16.8647 15.9555 16.0439 15.1344 15.0577 14.5571ZM22.4592 9.54004C20.6595 9.96116 18.9702 10.7763 17.517 11.9342C17.0131 12.3358 16.5439 12.7755 16.1108 13.2461C17.1803 13.9154 18.0837 14.8191 18.7532 15.8885C19.2238 15.4554 19.6643 14.987 20.0658 14.4831C21.2239 13.0298 22.0382 11.34 22.4592 9.54004ZM9.33341 22.6667H11.8334C12.3279 22.6667 12.8115 22.5198 13.2226 22.2451C13.6335 21.9705 13.9538 21.5803 14.143 21.1237C14.3322 20.667 14.3818 20.1641 14.2854 19.6792C14.2751 19.6274 14.2615 19.5762 14.248 19.5254C14.238 19.5045 14.2286 19.4831 14.2203 19.4611C14.2 19.4074 14.1859 19.3529 14.1772 19.2983C14.0526 18.962 13.8568 18.6549 13.601 18.3991C13.3446 18.1427 13.0366 17.9467 12.6993 17.8221C12.6456 17.8133 12.5918 17.7997 12.539 17.7798C12.5166 17.7713 12.4951 17.7614 12.4739 17.7513C12.4234 17.7379 12.3724 17.7249 12.3209 17.7147C11.836 17.6183 11.3331 17.6679 10.8764 17.8571C10.4198 18.0463 10.0296 18.3666 9.75496 18.7775C9.48026 19.1886 9.33341 19.6722 9.33341 20.1667V22.6667Z" fill="black"/>
       </svg>
     </button>
-    <button id="btn-brush" title="Brush Size" style="--btn-rgb:255,255,255;"
-      class="w-14 h-14 rounded-full shadow-lg flex items-center justify-center sidebar-btn">
-      <div id="brush-dot" class="rounded-full bg-gray-800" style="width:6px;height:6px;"></div>
-    </button>
+    <div id="btn-brush" title="Brush Size" class="shadow-lg">
+      <svg viewBox="0 0 32 108" width="42" height="141.75"
+           style="position:absolute;top:12px;left:7px;pointer-events:none;" aria-hidden="true">
+        <path d="M4.99655 11.9586C4.46009 5.52109 9.54022 0 16 0C22.4598 0 27.5399 5.52109 27.0035 11.9585L19.2491 105.01C19.1083 106.7 17.6957 108 16 108C14.3043 108 12.8917 106.7 12.7509 105.01L4.99655 11.9586Z" fill="rgba(0,0,0,0.3)"/>
+      </svg>
+      <div id="btn-brush-knob" class="sidebar-btn rounded-full border-2 shadow-lg"
+           style="top:122.25px;border-color:#838383;"></div>
+    </div>
   </div>
 
   <!-- Download Modal -->
@@ -217,6 +235,7 @@
     bindEvents();
     syncMenuButtonVisual();
     updateColorIcon();
+    syncBrushKnobPosition();
     updateCursor();
 
     window.addEventListener('resize', () => {
@@ -277,7 +296,6 @@
     // Sync brush color if on background color option
     if (colorIndex === 2) {
       color = bgColor;
-      document.getElementById('btn-color').style.setProperty('--btn-rgb', hexToRgbString(color));
       updateColorIcon();
       updateCursor();
     }
@@ -390,30 +408,70 @@
   }
 
   // ── Color & brush cycling ─────────────────────────────────────────────────
-  function hexToRgbString(hex) {
-    const n = parseInt(hex.slice(1), 16);
-    return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
-  }
-
   function updateColorIcon() {
-    document.querySelector('#btn-color svg').setAttribute('stroke', color === '#000000' ? 'white' : '#1f2937');
+    document.getElementById('btn-color-swatch').setAttribute('fill', color);
+    document.getElementById('btn-color-icon').setAttribute('fill', color === '#000000' ? 'white' : 'black');
   }
 
   function cycleColor() {
     colorIndex = (colorIndex + 1) % 3;
     color = ['#000000', '#ffffff', bgColor][colorIndex];
-    document.getElementById('btn-color').style.setProperty('--btn-rgb', hexToRgbString(color));
     updateColorIcon();
     updateCursor();
   }
 
-  function cycleBrush() {
-    brushIndex = (brushIndex + 1) % brushSizes.length;
+  // ── Brush slider ─────────────────────────────────────────────────────────
+  const BRUSH_TRACK_TOP = 12; // padding inset from the container's top/bottom edges
+  const BRUSH_TRACK_HEIGHT = 141.75; // height of the track shape itself
+  const BRUSH_KNOB_RADIUS = 15.75;
+  const BRUSH_STOPS = [138, 110.4375, 82.875, 55.3125, 27.75]; // index i -> knob center Y; brushSizes[0]=2(bottom) ... brushSizes[4]=30(top)
+
+  function syncBrushKnobPosition() {
+    document.getElementById('btn-brush-knob').style.top = (BRUSH_STOPS[brushIndex] - BRUSH_KNOB_RADIUS) + 'px';
+  }
+
+  function setBrushIndex(i) {
+    brushIndex = Math.max(0, Math.min(brushSizes.length - 1, i));
     brushSize = brushSizes[brushIndex];
-    const s = Math.min(brushSize * 1.5, 36);
-    const dot = document.getElementById('brush-dot');
-    dot.style.width = dot.style.height = s + 'px';
+    syncBrushKnobPosition();
     updateCursor();
+  }
+
+  function nearestBrushIndexForY(y) {
+    const clamped = Math.max(BRUSH_TRACK_TOP + BRUSH_KNOB_RADIUS, Math.min(BRUSH_TRACK_TOP + BRUSH_TRACK_HEIGHT - BRUSH_KNOB_RADIUS, y));
+    let nearest = 0, minDist = Infinity;
+    BRUSH_STOPS.forEach((stopY, idx) => {
+      const d = Math.abs(stopY - clamped);
+      if (d < minDist) { minDist = d; nearest = idx; }
+    });
+    return { index: nearest, y: clamped };
+  }
+
+  let brushDragging = false;
+
+  function onBrushKnobDown(e) {
+    e.stopPropagation(); // don't also trigger the track's tap-to-jump handler
+    brushDragging = true;
+    e.target.setPointerCapture(e.pointerId);
+  }
+
+  function onBrushKnobMove(e) {
+    if (!brushDragging) return;
+    const rect = document.getElementById('btn-brush').getBoundingClientRect();
+    const { index, y } = nearestBrushIndexForY(e.clientY - rect.top);
+    document.getElementById('btn-brush-knob').style.top = (y - BRUSH_KNOB_RADIUS) + 'px'; // live-follow pointer
+    if (index !== brushIndex) { brushIndex = index; brushSize = brushSizes[brushIndex]; updateCursor(); }
+  }
+
+  function onBrushKnobUp() {
+    if (!brushDragging) return;
+    brushDragging = false;
+    setBrushIndex(brushIndex); // snap exactly onto the stop
+  }
+
+  function onBrushTrackDown(e) {
+    const rect = document.getElementById('btn-brush').getBoundingClientRect();
+    setBrushIndex(nearestBrushIndexForY(e.clientY - rect.top).index); // tap anywhere on track to jump
   }
 
   function clearCanvas() {
@@ -438,6 +496,9 @@
     cascadeTimeouts.forEach(clearTimeout);
     cascadeTimeouts = [];
 
+    const menuRect = document.getElementById('btn-menu').getBoundingClientRect();
+    const menuCenterY = menuRect.top + menuRect.height / 2;
+
     TOOLBAR_BUTTON_IDS.forEach((id, i) => {
       const el = document.getElementById(id);
       const delay = menuOpen
@@ -450,8 +511,13 @@
         el.style.pointerEvents = '';
         cascadeTimeouts.push(setTimeout(() => { el.style.transitionDelay = ''; }, delay + CASCADE_TRANSFORM_MS));
       } else {
-        const dist = 72 + i * 68; // toolbar-top(96) - menu-top(24) + i * (56px button + 12px gap)
-        el.style.transform = `translateY(-${dist}px) scale(0.2)`;
+        // Align this element's center with the menu button's center — computed from
+        // actual layout rather than a fixed-row-height formula, since #btn-brush is a
+        // different height than the other 56px buttons and would otherwise collapse
+        // toward the wrong point.
+        const rect = el.getBoundingClientRect();
+        const dist = (rect.top + rect.height / 2) - menuCenterY;
+        el.style.transform = `translateY(${-dist}px) scale(0.2)`;
         el.style.opacity = '0';
         el.style.pointerEvents = 'none';
       }
@@ -541,7 +607,14 @@
       document.getElementById('settings-modal').style.display = 'flex';
     });
     document.getElementById('btn-color').addEventListener('click', cycleColor);
-    document.getElementById('btn-brush').addEventListener('click', cycleBrush);
+
+    bindPressFeedback(document.getElementById('btn-brush-knob'));
+    const brushKnob = document.getElementById('btn-brush-knob');
+    brushKnob.addEventListener('pointerdown', onBrushKnobDown);
+    brushKnob.addEventListener('pointermove', onBrushKnobMove);
+    brushKnob.addEventListener('pointerup', onBrushKnobUp);
+    brushKnob.addEventListener('pointercancel', onBrushKnobUp);
+    document.getElementById('btn-brush').addEventListener('pointerdown', onBrushTrackDown);
 
     document.getElementById('btn-close-preview').addEventListener('click', () => {
       document.getElementById('preview-modal').style.display = 'none';
