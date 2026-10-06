@@ -428,6 +428,7 @@
   const SHAPE_COUNT_MAX = 10;
   let shapeSettings = { ...DEFAULT_SHAPE_SETTINGS };
   let beforeImage = null, previewImage = null;
+  let shapesSnapshot = null; // generated shapes without user strokes; restored by Clear
   let selectedImages = new Set(['after']);
 
   function randomPastel() {
@@ -520,12 +521,10 @@
       updateCursor();
     }
 
-    setTimeout(() => {
-      const tmp = document.createElement('canvas');
-      tmp.width = canvas.width; tmp.height = canvas.height;
-      tmp.getContext('2d').drawImage(canvas, 0, 0);
-      beforeImage = tmp.toDataURL('image/png');
-    }, 100);
+    shapesSnapshot = document.createElement('canvas');
+    shapesSnapshot.width = canvas.width; shapesSnapshot.height = canvas.height;
+    shapesSnapshot.getContext('2d').drawImage(canvas, 0, 0);
+    beforeImage = shapesSnapshot.toDataURL('image/png');
   }
 
   function drawOval(cx, cy) {
@@ -694,10 +693,13 @@
     setBrushIndex(nearestBrushIndexForY(e.clientY - rect.top).index); // tap anywhere on track to jump
   }
 
+  // Erases user strokes only — the generated shapes are restored so the same
+  // canvas can be drawn on again.
   function clearCanvas() {
     const canvas = document.getElementById('canvas');
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (shapesSnapshot) ctx.drawImage(shapesSnapshot, 0, 0);
   }
 
   // ── Menu ──────────────────────────────────────────────────────────────────
