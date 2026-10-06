@@ -716,6 +716,10 @@
     cascadeTimeouts.forEach(clearTimeout);
     cascadeTimeouts = [];
 
+    // The toolbar container sits above the canvas; let strokes pass through its
+    // footprint while collapsed so that area is drawable.
+    document.getElementById('toolbar').style.pointerEvents = menuOpen ? '' : 'none';
+
     const menuRect = document.getElementById('btn-menu').getBoundingClientRect();
     const menuCenterY = menuRect.top + menuRect.height / 2;
 
