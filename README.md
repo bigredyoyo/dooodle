@@ -55,6 +55,14 @@ This project is licensed under the **Creative Commons Attribution-NonCommercial 
 
 If you're interested in commercial licensing, please contact me.
 
+### Icon Credits
+
+Toolbar icons are adapted from [The Noun Project](https://thenounproject.com) under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/):
+
+- Clear: [clear](https://thenounproject.com/icon/clear-5507757/) by LAFS from Noun Project
+- New Shape: [new page](https://thenounproject.com/icon/new-page-8082929/) by ridhobadal from Noun Project
+- Shape Settings: [shape](https://thenounproject.com/icon/shape-7921359/) by Adrien Coquet from Noun Project
+
 ## Technical Details
 
 Built with:
