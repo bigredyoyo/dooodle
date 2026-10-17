@@ -430,6 +430,12 @@
                   aria-label="Mirror shapes across the vertical axis"
                   onclick="toggleMirror()"></button>
         </div>
+        <div class="sk-row">
+          <span class="sk-label">Mirror drawing</span>
+          <button id="mirror-drawing-toggle" class="sk-toggle" role="switch" aria-checked="false"
+                  aria-label="Mirror brush strokes across the vertical axis"
+                  onclick="toggleMirrorDrawing()"></button>
+        </div>
         <!-- Sliders -->
         <div id="sliders-container" style="display:flex;flex-direction:column;gap:12px;"></div>
         <div class="sk-divider"></div>
@@ -465,6 +471,7 @@
   let shapesSnapshot = null; // generated shapes without user strokes; restored by Clear
   let selectedImages = new Set(['after']);
 let mirrorShapes = false;
+let mirrorDrawing = false;
 let drawCtx = null;
 
   function randomPastel() {
@@ -532,14 +539,24 @@ let drawCtx = null;
     mirrorShapes = !mirrorShapes;
     const btn = document.getElementById('mirror-toggle');
     if (btn) btn.setAttribute('aria-checked', mirrorShapes);
+    generateRandomShape();
+  }
+
+  function toggleMirrorDrawing() {
+    mirrorDrawing = !mirrorDrawing;
+    const btn = document.getElementById('mirror-drawing-toggle');
+    if (btn) btn.setAttribute('aria-checked', mirrorDrawing);
   }
 
   function resetShapeSettings() {
     shapeSettings = { ...DEFAULT_SHAPE_SETTINGS };
     setShapesColor('#ffffff');
     mirrorShapes = false;
+    mirrorDrawing = false;
     const mt = document.getElementById('mirror-toggle');
     if (mt) mt.setAttribute('aria-checked', false);
+    const mdt = document.getElementById('mirror-drawing-toggle');
+    if (mdt) mdt.setAttribute('aria-checked', false);
     buildSliders();
   }
 
@@ -663,10 +680,13 @@ let drawCtx = null;
     return { x: src.clientX - rect.left, y: src.clientY - rect.top };
   }
 
+  let lastDrawPos = null;
+
   function onDown(e) {
     e.preventDefault();
     isDrawing = true;
     const p = getPos(e);
+    lastDrawPos = p;
     ctx.beginPath(); ctx.moveTo(p.x, p.y);
   }
 
@@ -676,7 +696,19 @@ let drawCtx = null;
     const p = getPos(e);
     ctx.strokeStyle = color;
     ctx.lineWidth = brushSize;
-    ctx.lineTo(p.x, p.y); ctx.stroke();
+    // original stroke
+    ctx.beginPath();
+    ctx.moveTo(lastDrawPos.x, lastDrawPos.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    if (mirrorDrawing) {
+      const w = document.getElementById('canvas').width;
+      ctx.beginPath();
+      ctx.moveTo(w - lastDrawPos.x, lastDrawPos.y);
+      ctx.lineTo(w - p.x, p.y);
+      ctx.stroke();
+    }
+    lastDrawPos = p;
   }
 
   function onUp() { isDrawing = false; }
