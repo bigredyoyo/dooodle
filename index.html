@@ -182,6 +182,39 @@
     .sk-slider input:active::-webkit-slider-thumb { transform: scale(1.15); }
     .sk-slider input:focus-visible { outline: 2px solid var(--sk-ballpoint); outline-offset: 2px; border-radius: 14px; }
 
+    /* Color palette — expands from the color button */
+    .color-palette {
+      position: fixed;
+      z-index: 60;
+      padding: 10px;
+      background: var(--sk-paper);
+      border-radius: 9999px;
+      box-shadow: 0 1px 2px rgba(51,46,38,0.12), 0 8px 20px rgba(51,46,38,0.18);
+      transform-origin: center top;
+      transform: scaleY(0);
+      opacity: 0;
+      transition: transform 220ms cubic-bezier(0.2, 0.9, 0.3, 1), opacity 180ms ease-out;
+      pointer-events: none;
+    }
+    .color-palette.is-open {
+      transform: scaleY(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .color-palette .cp-swatch {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 3px solid var(--sk-graphite);
+      cursor: pointer;
+      padding: 0;
+      transition: transform 120ms ease-out;
+      box-shadow: 0 1px 2px rgba(51,46,38,0.15);
+    }
+    .color-palette .cp-swatch:hover { transform: scale(1.12); }
+    .color-palette .cp-swatch.is-selected {
+      box-shadow: 0 0 0 3px var(--sk-highlight), 0 1px 2px rgba(51,46,38,0.15);
+    }
+
     /* Toggle switch — marker = on */
     .sk-toggle {
       width: 46px; height: 26px;
@@ -392,6 +425,11 @@
     </div>
   </div>
 
+  <!-- Color Palette (expands from the color button) -->
+  <div id="color-palette" class="color-palette" style="display:none;">
+    <div id="color-palette-inner" style="display:flex;flex-direction:column;gap:8px;align-items:center;"></div>
+  </div>
+
   <!-- Settings Modal -->
   <div id="settings-modal" class="sk-backdrop">
     <div class="sk-card" style="max-width:520px;">
@@ -472,6 +510,7 @@
   let selectedImages = new Set(['after']);
 let mirrorShapes = false;
 let mirrorDrawing = false;
+let selectedPaletteIndex = 4; // 0 white, 1 light tint, 2 bg, 3 dark tint, 4 black
 let drawCtx = null;
 
   function randomPastel() {
@@ -548,6 +587,68 @@ let drawCtx = null;
     if (btn) btn.setAttribute('aria-checked', mirrorDrawing);
   }
 
+  function mixColor(hex, tr, tg, tb, amount) {
+    const h = hex.replace('#', '');
+    let r = parseInt(h.substr(0, 2), 16);
+    let g = parseInt(h.substr(2, 2), 16);
+    let b = parseInt(h.substr(4, 2), 16);
+    r = Math.round(r + (tr - r) * amount);
+    g = Math.round(g + (tg - g) * amount);
+    b = Math.round(b + (tb - b) * amount);
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function computeTints(bg) {
+    return {
+      light: mixColor(bg, 255, 255, 255, 0.45),
+      dark: mixColor(bg, 0, 0, 0, 0.35),
+    };
+  }
+
+  function buildColorPalette() {
+    const inner = document.getElementById('color-palette-inner');
+    const tints = computeTints(bgColor);
+    const colors = ['#ffffff', tints.light, bgColor, tints.dark, '#000000'];
+    inner.innerHTML = colors.map((c, i) => `
+      <button class="cp-swatch ${i === selectedPaletteIndex ? 'is-selected' : ''}" data-index="${i}"
+        style="background:${c};" aria-label="Brush color" onclick="selectPaletteColor(${i})"></button>
+    `).join('');
+  }
+
+  function openColorPalette() {
+    buildColorPalette();
+    const btn = document.getElementById('btn-color');
+    const pal = document.getElementById('color-palette');
+    const rect = btn.getBoundingClientRect();
+    pal.style.display = 'flex';
+    const w = pal.offsetWidth;
+    pal.style.top = rect.top + 'px';
+    pal.style.left = (rect.left - w - 10) + 'px';
+    requestAnimationFrame(() => pal.classList.add('is-open'));
+  }
+
+  function closeColorPalette() {
+    const pal = document.getElementById('color-palette');
+    if (!pal.classList.contains('is-open')) return;
+    pal.classList.remove('is-open');
+    setTimeout(() => {
+      if (!pal.classList.contains('is-open')) pal.style.display = 'none';
+    }, 220);
+  }
+
+  function selectPaletteColor(i) {
+    const tints = computeTints(bgColor);
+    const colors = ['#ffffff', tints.light, bgColor, tints.dark, '#000000'];
+    selectedPaletteIndex = i;
+    color = colors[i];
+    updateColorIcon();
+    updateCursor();
+    document.querySelectorAll('.cp-swatch').forEach((el, idx) => {
+      el.classList.toggle('is-selected', idx === i);
+    });
+    closeColorPalette();
+  }
+
   function resetShapeSettings() {
     shapeSettings = { ...DEFAULT_SHAPE_SETTINGS };
     setShapesColor('#ffffff');
@@ -602,9 +703,11 @@ let drawCtx = null;
       drawCtx = null;
     }
 
-    // Sync brush color if on background color option
-    if (colorIndex === 2) {
-      color = bgColor;
+    // Keep brush color in sync if it's one of the background-derived palette colors
+    if (selectedPaletteIndex >= 1 && selectedPaletteIndex <= 3) {
+      const tints = computeTints(bgColor);
+      const derived = [tints.light, bgColor, tints.dark];
+      color = derived[selectedPaletteIndex - 1];
       updateColorIcon();
       updateCursor();
     }
@@ -956,7 +1059,19 @@ let drawCtx = null;
     document.getElementById('btn-settings').addEventListener('click', () => {
       openModal('settings-modal');
     });
-    document.getElementById('btn-color').addEventListener('click', cycleColor);
+    document.getElementById('btn-color').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const pal = document.getElementById('color-palette');
+      if (pal.classList.contains('is-open')) closeColorPalette();
+      else openColorPalette();
+    });
+    document.addEventListener('pointerdown', (e) => {
+      const pal = document.getElementById('color-palette');
+      const btn = document.getElementById('btn-color');
+      if (pal.style.display !== 'none' && !pal.contains(e.target) && !btn.contains(e.target)) {
+        closeColorPalette();
+      }
+    });
 
     bindPressFeedback(document.getElementById('btn-brush-knob'));
     const brushKnob = document.getElementById('btn-brush-knob');
